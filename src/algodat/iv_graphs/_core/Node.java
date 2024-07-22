@@ -1,3 +1,5 @@
+package algodat.iv_graphs._core;
+
 import java.util.HashSet;
 import java.util.List;
 

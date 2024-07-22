@@ -1,3 +1,5 @@
+package algodat.iv_graphs._core;
+
 public class Graph {
     private final Node[] nodes;
 

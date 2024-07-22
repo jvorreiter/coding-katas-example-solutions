@@ -1,3 +1,5 @@
+package algodat.iv_graphs._core;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,7 +16,7 @@ public class GraphStdinInitializer {
      * 0 1<br>
      * 1 2<br>
      * 2 0<br>
-     * @return den initialisierten Graph
+     * @return den initialisierten algodat.iv_graphs._core.Graph
      */
     public static Graph fromStdin() {
         try {
