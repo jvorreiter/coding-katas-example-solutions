@@ -1,4 +1,4 @@
-package algodat.i_recursion_and_basic_data_strucutures;
+package algodat.i_recursion_and_basic_data_structures;
 
 public class RecursiveAddition {
     public static void main(String[] args) {
