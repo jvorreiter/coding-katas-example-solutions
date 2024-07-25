@@ -1,34 +1,8 @@
-package algodat.i_recursion_and_basic_data_structures;
+package algodat.i_recursion_and_basic_data_structures.data_structures.doubly_linked_list;
 
-public class SimpleDoublyLinkedListMain {
-    public static void main(String[] args) {
-        var linkedList = new SimpleDoublyLinkedList<Integer>();
-
-        System.out.println("--- DOPPELT VERKETTETE LISTE ---");
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-        linkedList.add(0);
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-        System.out.println("Element am Index 0: " + linkedList.get(0));
-        linkedList.add(100);
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-        System.out.println("Element am Index 1: " + linkedList.get(1));
-        linkedList.add(1000);
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-        System.out.println("Element am Index 2: " + linkedList.get(2));
-        linkedList.remove(1);
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-        System.out.println("Element am Index 1: " + linkedList.get(1));
-        linkedList.removeFirst();
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-        System.out.println("Element am Index 0: " + linkedList.get(0));
-        linkedList.removeLast();
-        System.out.println("Anzahl Elemente in der Liste: " + linkedList.size());
-    }
-}
-
-class SimpleDoublyLinkedList<T> {
-    private Node<T> head;
-    private Node<T> tail;
+public class SimpleDoublyLinkedList<T> {
+    private DoublyLinkedListNode<T> head;
+    private DoublyLinkedListNode<T> tail;
 
     public int size() {
         // kein Element in der Kette
@@ -49,7 +23,7 @@ class SimpleDoublyLinkedList<T> {
     }
 
     public void add(T element) {
-        var node = new Node<>(element);
+        var node = new DoublyLinkedListNode<>(element);
 
         // es wird das erste Element hinzugefügt: Head und Tail sind das einzige Element
         if (this.head == null) {
@@ -64,7 +38,7 @@ class SimpleDoublyLinkedList<T> {
         }
     }
 
-    private Node<T> getNode(int index) {
+    private DoublyLinkedListNode<T> getNode(int index) {
         if (index < 0) {
             throw new IllegalArgumentException("Index must be positive or zero.");
         }
@@ -129,36 +103,5 @@ class SimpleDoublyLinkedList<T> {
         } else {
             this.tail = node.getPrevious();
         }
-    }
-}
-
-class Node<T> {
-    private final T value;
-
-    private Node<T> previous;
-    private Node<T> next;
-
-    public Node(T value) {
-        this.value = value;
-    }
-
-    public T getValue() {
-        return this.value;
-    }
-
-    public Node<T> getPrevious() {
-        return previous;
-    }
-
-    public void setPrevious(Node<T> previous) {
-        this.previous = previous;
-    }
-
-    public Node<T> getNext() {
-        return next;
-    }
-
-    public void setNext(Node<T> next) {
-        this.next = next;
     }
 }

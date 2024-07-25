@@ -1,10 +1,6 @@
-package algodat.i_recursion_and_basic_data_structures;
+package algodat.i_recursion_and_basic_data_structures.recursion.addition;
 
 public class RecursiveAddition {
-    public static void main(String[] args) {
-        int result = Add(35, 35);
-        System.out.println(result);
-    }
 
     public static int Add(int a, int b) {
         // Abbruchbedingung: wenn beide Variablen 0 sind, ist die Summe 0

@@ -1,16 +1,6 @@
-package algodat.i_recursion_and_basic_data_structures;
+package algodat.i_recursion_and_basic_data_structures.recursion.palindrome_check;
 
-public class RecursivePalindomeCheck {
-    public static void main(String[] args) {
-        var palindrome1 = "ABCDEDCBA";
-        var palindrome2 = "ABCDEEDCBA";
-        var noPalindrome = "AAAABAAA";
-
-        System.out.println(String.format("Is \"%s\" a palindrome: %s", palindrome1, IsPalindome(palindrome1)));
-        System.out.println(String.format("Is \"%s\" a palindrome: %s", palindrome2, IsPalindome(palindrome2)));
-        System.out.println(String.format("Is \"%s\" a palindrome: %s", noPalindrome, IsPalindome(noPalindrome)));
-    }
-
+public class RecursivePalindromeCheck {
     public static boolean IsPalindome(String word) {
         // besteht das Wort aus 0 oder 1 Zeichen, so ist es automatisch ein Palindrom
         if (word.length() < 2) {
