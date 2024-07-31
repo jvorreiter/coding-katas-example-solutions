@@ -1,11 +1,9 @@
 package algodat.v_graph_pathfinding;
 
-import algodat.v_graph_pathfinding._core.Coordinates;
 import algodat.v_graph_pathfinding._core.DigraphReader;
 import algodat.v_graph_pathfinding._core.SolutionWriter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class PathfindingMain {
     public static void main(String[] args) throws Exception {

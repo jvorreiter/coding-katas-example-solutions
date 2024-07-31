@@ -1,9 +1,7 @@
 package algodat.v_graph_pathfinding._core;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DigraphReader {
     public static DigraphData readDigraph(String file) throws Exception {
