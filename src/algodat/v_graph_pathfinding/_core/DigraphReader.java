@@ -1,6 +1,7 @@
 package algodat.v_graph_pathfinding._core;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,9 @@ public class DigraphReader {
         var latitude = Double.parseDouble(lineParts[1]);
         var longitude = Double.parseDouble(lineParts[2]);
 
-        return new NodeData(id, latitude, longitude);
+        var coordinates = new Coordinates(latitude, longitude);
+
+        return new NodeData(id, coordinates);
     }
 
     private static DirectedConnection readConnection(BufferedReader reader) throws IOException {
