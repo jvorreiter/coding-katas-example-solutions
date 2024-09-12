@@ -1,6 +1,10 @@
 package state_machines.i_introduction.examples.simple;
 
+import com.github.oxo42.stateless4j.StateMachine;
+import com.github.oxo42.stateless4j.StateMachineConfig;
+import com.github.oxo42.stateless4j.triggers.TriggerWithParameters1;
 import state_machines.i_introduction.examples.Licht;
+import state_machines.i_introduction.examples.NpcStateMachine;
 
 public class Lichtschalter {
     private boolean istAn;
@@ -31,4 +35,5 @@ public class Lichtschalter {
         this.licht.ausschalten();
     }
 }
+
 
