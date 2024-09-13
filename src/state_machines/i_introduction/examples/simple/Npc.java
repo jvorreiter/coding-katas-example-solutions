@@ -1,7 +1,5 @@
 package state_machines.i_introduction.examples.simple;
 
-import state_machines.i_introduction.examples.NpcStateMachine;
-
 public class Npc {
     private enum Zustand {
         HERUMLAUFEN,
@@ -9,14 +7,6 @@ public class Npc {
         NACH_SPIELER_SUCHEN,
         VERSTECKEN,
         IDLE
-    }
-
-    private enum Ereignis {
-        SPIELER_GESICHTET,
-        SPIELER_AUS_SICHTFELD_VERLOREN,
-        SPIELER_VERGESSEN,
-        LEBENSPUNKTE_SIND_NIEDRIG,
-        ZEIT_VERGANGEN_10_SEKUNDEN
     }
 
     private Zustand state;

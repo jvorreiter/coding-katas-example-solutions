@@ -16,8 +16,11 @@ public class LichtschalterStateMachine {
         this.stateMachine = createStateMachine(startzustand);
     }
 
-    public void ausloesen(Ereignis ereignis) {
-        this.stateMachine.fire(ereignis);
+    public void lichtschalterUmlegen() {
+        stateMachine.fire(Ereignis.LICHTSCHALTER_UMLEGEN);
+    }
+    public void stromausfall() {
+        stateMachine.fire(Ereignis.STROMAUSFALL);
     }
 
     private StateMachine<Zustand, Ereignis> createStateMachine(Zustand startzustand) {
@@ -37,7 +40,7 @@ public class LichtschalterStateMachine {
         config.configure(Zustand.UNINITIALIZED)
                 .permit(Ereignis.INITIALIZE, startzustand);
 
-        var stateMachine = new StateMachine<>(Zustand.UNINITIALIZED, config);
+        var stateMachine = new StateMachine<>(Zustand.AUS, config);
         stateMachine.fire(Ereignis.INITIALIZE);
 
         return stateMachine;
