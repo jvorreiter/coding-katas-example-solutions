@@ -9,7 +9,7 @@ public class DynamicTransitionExample {
     private class State {}
 
 
-    private final TriggerWithParameters1<Character, Character> trigger = new TriggerWithParameters1<>(TRIGGER_CHAR_DOES_NOTHING, Character.class);
+    private final TriggerWithParameters1<Character, State, Character> trigger = new TriggerWithParameters1<>(TRIGGER_CHAR_DOES_NOTHING, Character.class);
     private final StateMachine<State, Character> stateMachine;
 
     public DynamicTransitionExample() {
@@ -18,7 +18,7 @@ public class DynamicTransitionExample {
         stateMachine.fire(trigger, 'a');
         stateMachine.fire(trigger, 'b');
         stateMachine.fire(trigger, 'c');
-        stateMachine.fire(trigger, 'd');
+        // uncomment this to see an error: stateMachine.fire(trigger, 'd');
     }
 
     public static void main(String[] args) {

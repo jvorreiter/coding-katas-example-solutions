@@ -21,7 +21,7 @@ public class NpcStateMachine {
         ZEIT_VERGANGEN_10_SEKUNDEN
     }
 
-    private final StateMachine<NpcStateMachine.Zustand, NpcStateMachine.Ereignis> stateMachine;
+    private final StateMachine<Zustand, Ereignis> stateMachine;
     private int lebenspunkte;
 
     public NpcStateMachine() {
