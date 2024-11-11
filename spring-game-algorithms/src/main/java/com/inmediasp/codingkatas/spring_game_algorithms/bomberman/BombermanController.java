@@ -6,8 +6,14 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class BombermanController {
 
+    private final BombermanGameService gameService;
+
+    public BombermanController(BombermanGameService gameService) {
+        this.gameService = gameService;
+    }
+
     @MessageMapping("/bomberman/start")
     public void startNewGame() {
-        //TODO: start new game in background and send messages regularly
+        gameService.startNewGame();
     }
 }

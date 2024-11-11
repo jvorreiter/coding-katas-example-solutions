@@ -10,6 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/algorithms-and-data-structures" />
+            <option value="$PROJECT_DIR$/game-algorithms" />
+            <option value="$PROJECT_DIR$/game-algorithms/bomberman" />
             <option value="$PROJECT_DIR$/spring-game-algorithms" />
             <option value="$PROJECT_DIR$/state-machines" />
           </set>

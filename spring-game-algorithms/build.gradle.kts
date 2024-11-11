@@ -12,6 +12,8 @@ java {
 
 
 dependencies {
+	implementation(project(":game-algorithms:bomberman"))
+
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
