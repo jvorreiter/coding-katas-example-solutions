@@ -174,7 +174,7 @@ public class BombermanGame implements Game<BombermanGameState> {
 
         while (x >= 0 && x < cells.length && y >= 0 && y < cells[0].length) {
             var cell = cells[x][y];
-            if (!cell.obstacleType().equals(ObstacleType.NONE)) {
+            if (cell.obstacleType().equals(ObstacleType.WALL)) {
                 break;
             }
 
@@ -182,6 +182,17 @@ public class BombermanGame implements Game<BombermanGameState> {
             y += dy;
 
             explosion.addCell(cell);
+
+            // explosions dont pass through breakable walls, players, or other bombs
+            if (cell.obstacleType().equals(ObstacleType.BREAKABLE)) {
+                break;
+            }
+            if (cell.player().isPresent()) {
+                break;
+            }
+            if (cell.bomb().isPresent() && !cell.bomb().get().equals(bomb)) {
+                break;
+            }
         }
     }
 
