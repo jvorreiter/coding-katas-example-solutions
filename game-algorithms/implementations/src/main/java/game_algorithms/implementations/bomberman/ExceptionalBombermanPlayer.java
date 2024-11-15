@@ -6,12 +6,12 @@ import game_algorithms.core.bomberman.BombermanPlayerAction;
 
 import java.util.Random;
 
-public class RandomBombermanPlayer implements BombermanPlayer {
+public class ExceptionalBombermanPlayer implements BombermanPlayer {
 
     private final String name;
     private final Random random = new Random();
 
-    public RandomBombermanPlayer(String name) {
+    public ExceptionalBombermanPlayer(String name) {
         this.name = name;
     }
 
@@ -22,7 +22,6 @@ public class RandomBombermanPlayer implements BombermanPlayer {
 
     @Override
     public BombermanPlayerAction getNextAction(BombermanGameState gameState) {
-        return BombermanPlayerAction.values()[random.nextInt(BombermanPlayerAction.values().length)];
+        throw new RuntimeException("whoops");
     }
 }
-

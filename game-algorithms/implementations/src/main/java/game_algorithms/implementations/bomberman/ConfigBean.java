@@ -20,7 +20,7 @@ public class ConfigBean {
                         new RandomBombermanPlayer("Random 1"),
                         new RandomBombermanPlayer("Random 2"),
                         new RandomBombermanPlayer("Random 3"),
-                        new RandomBombermanPlayer("Random 4")
+                        new ExceptionalBombermanPlayer("Exceptional Player")
                 )
         );
     }

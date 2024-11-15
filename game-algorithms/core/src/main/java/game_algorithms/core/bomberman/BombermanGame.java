@@ -115,8 +115,13 @@ public class BombermanGame implements Game<BombermanGameState> {
                 continue;
             }
 
-            var action = player.implementation().getNextAction(state);
-            doPlayerAction(player, action);
+            try {
+                var action = player.implementation().getNextAction(state);
+                doPlayerAction(player, action);
+            } catch(Throwable throwable) {
+                // players are killed if they throw any exception
+                player.setAlive(false);
+            }
         }
     }
 

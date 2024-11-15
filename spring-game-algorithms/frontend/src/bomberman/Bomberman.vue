@@ -5,10 +5,10 @@ import { computed, ref } from "vue";
 
 client.subscribe("/game/bomberman", (message) => {
   const json: BombermanStateMessage = JSON.parse(message.body);
-  console.log('[bomberman]', json);
+  console.log("[bomberman]", json);
   isGameOver.value = json.isGameOver;
 
-  if(!isGameOver.value) {
+  if (!isGameOver.value) {
     state.value = json.state;
   }
 });
@@ -18,11 +18,11 @@ client.publish({ destination: "/game/bomberman/start" });
 const state = ref<BombermanGameState>();
 const isGameOver = ref(false);
 const winner = computed(() => {
-  if(!isGameOver.value) {
+  if (!isGameOver.value) {
     return undefined;
   }
 
-  return state.value?.players.find(p => p.isAlive);
+  return state.value?.players.find((p) => p.isAlive);
 });
 
 const cells = computed(() => {
@@ -40,7 +40,7 @@ const cells = computed(() => {
       (p) => p.cell?.x == x && p.cell.y == y
     );
     const bomb = players
-      .flatMap((p) => p.bombs.map(bomb => ({ bomb, owner: p })))
+      .flatMap((p) => p.bombs.map((bomb) => ({ bomb, owner: p })))
       .find((b) => b.bomb.cell.x == x && b.bomb.cell.y == y);
     const explosion = explosions
       .flatMap((e) => e.cells)
@@ -61,55 +61,73 @@ const cells = computed(() => {
 
 <template>
   <main>
-  <div v-if="state != null" class="bomberman">
-    <div
-      class="grid"
-      :style="{
-        '--width': state.width,
-        '--height': state.height,
-      }"
-    >
-      <div v-for="cell in cells" :data-x="cell.x" :data-y="cell.y" class="cell">
+    <div v-if="state != null" class="bomberman">
+      <div
+        class="grid"
+        :style="{
+          '--width': state.width,
+          '--height': state.height,
+        }"
+      >
         <div
-          v-if="cell.wall"
-          class="wall"
-          :class="{ 'wall--breakable': cell.breakable }"
-        />
-        <div v-if="cell.explosion" class="explosion" />
-        <div v-if="cell.bomb != null" class="bomb" :class="{ 'bomb--triggered': cell.bomb.bomb.isTriggered }">
-          <div class="bomb-background" />
-          <div class="bomb-owner" :class="`owner--${cell.bomb.owner.index}`" />
+          v-for="cell in cells"
+          :data-x="cell.x"
+          :data-y="cell.y"
+          class="cell"
+        >
+          <div
+            v-if="cell.wall"
+            class="wall"
+            :class="{ 'wall--breakable': cell.breakable }"
+          />
+          <div v-if="cell.explosion" class="explosion" />
+          <div
+            v-if="cell.bomb != null"
+            class="bomb"
+            :class="{ 'bomb--triggered': cell.bomb.bomb.isTriggered }"
+          >
+            <div class="bomb-background" />
+            <div
+              class="bomb-owner"
+              :class="`owner--${cell.bomb.owner.index}`"
+            />
+          </div>
+          <div
+            v-if="cell.player >= 0"
+            class="player"
+            :class="[
+              `player--${cell.player}`,
+              {
+                'player--dead': cell.player >= 0 && cell.explosion,
+              },
+            ]"
+          />
         </div>
+      </div>
+
+      <div v-if="isGameOver" class="game-over">
+        <div>Game Over!</div>
+        <div v-if="winner == null">The game ends in a draw!</div>
+        <div v-else>
+          The winner is: {{ winner.name }} (Player {{ winner.index }})!
+        </div>
+      </div>
+    </div>
+
+    <div v-if="state != null">
+      <u>Maximum bombs per player: </u>
+      <div v-for="player in state.players">
         <div
-          v-if="cell.player >= 0"
-          class="player"
-          :class="[
-            `player--${cell.player}`,
-            {
-              'player--dead': cell.player >= 0 && cell.explosion,
-            },
-          ]"
+          v-text="
+            `${player.name} (Player ${player.index}): ${player.maxBombCount} bomb(s)`
+          "
+          :style="{
+            'text-decoration': player.isAlive ? '' : 'line-through',
+          }"
         />
       </div>
     </div>
-
-    <div v-if="isGameOver" class="game-over">
-      <div> Game Over! </div>
-      <div v-if="winner == null"> The game ends in a draw! </div>
-      <div v-else> 
-        The winner is: {{ winner.name }} (Player {{ winner.index }})! 
-      </div>
-    </div>
-  </div>
-
-  <div v-if="state != null">
-    <u>Maximum bombs per player: </u>
-    <div v-for="player in state.players">
-      <div v-text="`${player.name} (Player ${player.index}): ${player.maxBombCount} bomb(s)`" />
-    </div>
-  </div>
   </main>
-
 </template>
 
 <style scoped>
@@ -200,31 +218,38 @@ main {
   color: var(--color);
   text-shadow: 0 0 2px black, 0 0 2px black, 0 0 4px black, 0 0 4px black;
 }
-.player--0, .owner--0 {
+.player--0,
+.owner--0 {
   --color: rgb(62, 194, 255);
 }
 .player--0::after {
   content: "0";
 }
-.player--1, .owner--1 {
+.player--1,
+.owner--1 {
   --color: rgb(62, 255, 165);
 }
 .player--1::after {
   content: "1";
 }
-.player--2, .owner--2 {
+.player--2,
+.owner--2 {
   --color: rgb(197, 255, 62);
 }
 .player--2::after {
   content: "2";
 }
-.player--3, .owner--3 {
+.player--3,
+.owner--3 {
   --color: rgb(200, 62, 255);
 }
 .player--3::after {
   content: "3";
 }
-.owner--0, .owner--1, .owner--2, .owner--3 {
+.owner--0,
+.owner--1,
+.owner--2,
+.owner--3 {
   background: var(--color);
 }
 .player--dead {
