@@ -13,7 +13,10 @@ client.subscribe("/game/bomberman", (message) => {
   }
 });
 
-client.publish({ destination: "/game/bomberman/start" });
+const startGame = () => {
+  client.publish({ destination: "/game/bomberman/start" });
+};
+startGame();
 
 const state = ref<BombermanGameState>();
 const isGameOver = ref(false);
@@ -127,6 +130,10 @@ const cells = computed(() => {
         />
       </div>
     </div>
+
+    <button type="button" v-if="state == null || isGameOver" @click="() => startGame()">
+      Start new game
+    </button>
   </main>
 </template>
 

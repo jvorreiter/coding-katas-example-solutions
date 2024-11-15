@@ -48,7 +48,7 @@ public class BombermanGameService {
                 Sleeper.sleep(1000);
             } while (game.nextTurn());
 
-            simpTemplate.convertAndSend("/game/bomberman", new BombermanStateMessage(null, true));
+            simpTemplate.convertAndSend("/game/bomberman", new BombermanStateMessage(game.getState(), true));
 
             logger.info("Game over");
         } finally {
