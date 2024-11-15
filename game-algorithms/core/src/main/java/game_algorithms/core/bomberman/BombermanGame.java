@@ -10,6 +10,8 @@ public class BombermanGame implements Game<BombermanGameState> {
 
     private final Random random = new Random();
 
+    private final int BOMB_RANGE = 3;
+
     /* TODO: These rules should be introduced, as they are more limited and
         differ from the original rules for the sake of allowing more strategies
 
@@ -22,7 +24,7 @@ public class BombermanGame implements Game<BombermanGameState> {
         - players have a single life, if a player dies it is out of the game
         - players can only place a single bomb at a time at the start, there are hidden power-ups that increase this number
         - bombs don't detonate immediately, they detonate with a random delay of 1 to 5 turns
-        - bombs blast through the whole row/column in both directions until an obstacle or player is hit
+        - bombs blast through the row/column in both directions (range 3 cells) until an obstacle or other bomb is hit
         - bomb blasts trigger other bombs immediately
      */
 
@@ -101,9 +103,9 @@ public class BombermanGame implements Game<BombermanGameState> {
             }
         }
 
+        doPlayerTurns();
         updateDetonatingBombs();
         handleExplodedCells();
-        doPlayerTurns();
 
         return true;
     }
@@ -192,11 +194,14 @@ public class BombermanGame implements Game<BombermanGameState> {
 
             explosion.addCell(cell);
 
-            // explosions dont pass through breakable walls, players, or other bombs
-            if (cell.obstacleType().equals(ObstacleType.BREAKABLE)) {
+            // maximum range reached
+            if(Math.abs(bomb.cell().x() - x) > BOMB_RANGE
+                || Math.abs(bomb.cell().y() - y) > BOMB_RANGE) {
                 break;
             }
-            if (cell.player().isPresent()) {
+
+            // explosions dont pass through breakable walls, or other bombs
+            if (cell.obstacleType().equals(ObstacleType.BREAKABLE)) {
                 break;
             }
             if (cell.bomb().isPresent() && !cell.bomb().get().equals(bomb)) {
