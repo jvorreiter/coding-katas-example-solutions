@@ -75,9 +75,13 @@ public class BombermanGame implements Game<BombermanGameState> {
                 cells[0][this.config.gridHeight() - 1], // bottom left
                 cells[this.config.gridWidth() - 1][0] // top right
         );
-        for (int i = 0; i < players.size(); i++) {
+
+        var randomPlayerOrder = new ArrayList<>(state.players());
+        randomPlayerOrder.sort((a, b) -> random.nextInt(-1, 2));
+
+        for (int i = 0; i < randomPlayerOrder.size(); i++) {
             var cornerCell = cornerCells.get(i);
-            var player = players.get(i);
+            var player = randomPlayerOrder.get(i);
 
             cornerCell.setPlayer(player);
             player.setCurrentCell(cornerCell);
