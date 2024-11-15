@@ -1,5 +1,6 @@
 export type BombermanStateMessage = {
     state: BombermanGameState;
+    isGameOver: boolean;
 }
 
 export type BombermanGameState = {
@@ -21,8 +22,10 @@ export type Obstacle = {
 }
 
 export type Player = {
+    index: number;
     name: string;
     bombs: Bomb[];
+    maxBombCount: number;
 } & (
     | { isAlive: true;  cell: CellPosition } 
     | { isAlive: false; cell?: undefined }
@@ -30,6 +33,7 @@ export type Player = {
 
 export type Bomb = {
     cell: CellPosition;
+    isTriggered: boolean;
 }
 
 export type Explosion = {
