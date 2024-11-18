@@ -13,7 +13,7 @@ public class ConfigBean {
         return new BombermanGameConfig(
                 13,
                 9,
-                0.5,
+                0.7,
                 0.1,
                 // add your player implementations here
                 List.of(

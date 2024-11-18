@@ -11,6 +11,7 @@ public class BombermanGame implements Game<BombermanGameState> {
     private final Random random = new Random();
 
     private final int BOMB_RANGE = 3;
+    private final int SPAWN_CLEAR_RANGE = 3;
 
     /* TODO: These rules should be introduced, as they are more limited and
         differ from the original rules for the sake of allowing more strategies
@@ -45,7 +46,14 @@ public class BombermanGame implements Game<BombermanGameState> {
 
     private void initBoard() {
         var cells = this.state.cells();
-        var players = this.state.players();
+
+        // place players in the corners
+        var cornerCellPositions = List.of(
+                new Position(0, 0),
+                new Position(this.config.gridWidth() - 1, this.config.gridHeight() - 1),
+                new Position(0, this.config.gridHeight() - 1),
+                new Position(this.config.gridWidth() - 1, 0)
+        );
 
         for (int x = 0; x < this.config.gridWidth(); x++) {
             for (int y = 0; y < this.config.gridHeight(); y++) {
@@ -58,8 +66,10 @@ public class BombermanGame implements Game<BombermanGameState> {
                     continue;
                 }
 
-                // keep 2 outer rows and 2 outer columns clear
-                if (x <= 1 || x >= this.config.gridWidth() - 2 || y <= 1 || y >= this.config.gridHeight() - 2) {
+                // keep cells clear with a certain distance to a spawn point
+                var x1 = x;
+                var y1 = y;
+                if (cornerCellPositions.stream().anyMatch(p -> getManhattanDistance(p.x(), p.y(), x1, y1) <= SPAWN_CLEAR_RANGE)) {
                     continue;
                 }
 
@@ -71,12 +81,7 @@ public class BombermanGame implements Game<BombermanGameState> {
         }
 
         // place players in the corners
-        var cornerCells = List.of(
-                cells[0][0], // top left
-                cells[this.config.gridWidth() - 1][this.config.gridHeight() - 1], // bottom right
-                cells[0][this.config.gridHeight() - 1], // bottom left
-                cells[this.config.gridWidth() - 1][0] // top right
-        );
+        var cornerCells = cornerCellPositions.stream().map(pos -> cells[pos.x()][pos.y()]).toList();
 
         var randomPlayerOrder = new ArrayList<>(state.players());
         randomPlayerOrder.sort((a, b) -> random.nextInt(-1, 2));
@@ -88,6 +93,10 @@ public class BombermanGame implements Game<BombermanGameState> {
             cornerCell.setPlayer(player);
             player.setCurrentCell(cornerCell);
         }
+    }
+
+    private int getManhattanDistance(int x0, int y0, int x1, int y1) {
+        return Math.abs(x0 - x1) + Math.abs(y0 - y1);
     }
 
     @Override
@@ -487,3 +496,5 @@ enum ObstacleType {
     BREAKABLE,
     NONE;
 }
+
+record Position(int x, int y){}
