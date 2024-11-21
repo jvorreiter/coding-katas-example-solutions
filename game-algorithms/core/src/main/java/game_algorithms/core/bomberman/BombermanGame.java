@@ -13,22 +13,6 @@ public class BombermanGame implements Game<BombermanGameState> {
     private final int BOMB_RANGE = 3;
     private final int SPAWN_CLEAR_RANGE = 3;
 
-    /* TODO: These rules should be introduced, as they are more limited and
-        differ from the original rules for the sake of allowing more strategies
-
-        RULES:
-        - player can only one action per turn: move (any direction), place a bomb, trigger detonation of placed bomb(s), do nothing
-            - players do their action in a random order for each turn, but all decide their turn at the same time
-        - players cannot move through obstacles, bombs, or other players
-            - exception: a player and a bomb can be in the same cell if the player just placed the bomb
-        - player can only move a single cell per turn
-        - players have a single life, if a player dies it is out of the game
-        - players can only place a single bomb at a time at the start, there are hidden power-ups that increase this number
-        - bombs don't detonate immediately, they detonate with a random delay of 1 to 5 turns
-        - bombs blast through the row/column in both directions (range 3 cells) until an obstacle or other bomb is hit
-        - bomb blasts trigger other bombs immediately
-     */
-
     public BombermanGame(BombermanGameConfig config) {
         if (config.players().stream().distinct().count() != config.players().size()) {
             throw new IllegalArgumentException("All bomberman players need to be distinct objects");
@@ -133,7 +117,7 @@ public class BombermanGame implements Game<BombermanGameState> {
             try {
                 var action = player.implementation().getNextAction(state);
                 doPlayerAction(player, action);
-            } catch(Throwable throwable) {
+            } catch (Throwable throwable) {
                 // players are killed if they throw any exception
                 player.setAlive(false);
             }
@@ -204,8 +188,8 @@ public class BombermanGame implements Game<BombermanGameState> {
             explosion.addCell(cell);
 
             // maximum range reached
-            if(Math.abs(bomb.cell().x() - x) > BOMB_RANGE
-                || Math.abs(bomb.cell().y() - y) > BOMB_RANGE) {
+            if (Math.abs(bomb.cell().x() - x) > BOMB_RANGE
+                    || Math.abs(bomb.cell().y() - y) > BOMB_RANGE) {
                 break;
             }
 
@@ -497,4 +481,5 @@ enum ObstacleType {
     NONE;
 }
 
-record Position(int x, int y){}
+record Position(int x, int y) {
+}
