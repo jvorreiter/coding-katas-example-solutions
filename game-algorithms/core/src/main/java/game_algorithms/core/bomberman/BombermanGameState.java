@@ -12,7 +12,7 @@ public record BombermanGameState(
 
     public record Obstacle(CellPosition cell, boolean isBreakable) {}
     public record CellPosition(int x, int y) {}
-    public record Player(int index, String name, boolean isAlive, CellPosition cell, List<Bomb> bombs, int maxBombCount) {}
+    public record Player(boolean isSelf, int index, String name, boolean isAlive, CellPosition cell, List<Bomb> bombs, int maxBombCount) {}
     public record Bomb(CellPosition cell, boolean isTriggered) {}
     public record Explosion(List<CellPosition> cells) {}
 }
