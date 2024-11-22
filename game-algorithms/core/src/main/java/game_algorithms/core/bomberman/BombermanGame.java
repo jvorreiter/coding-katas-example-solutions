@@ -468,7 +468,7 @@ class Cell {
 class Player {
     private final BombermanPlayer implementation;
     private final List<Bomb> bombs = new ArrayList<>();
-    private int maxBombCount = 5;
+    private int maxBombCount = 1;
     private Cell currentCell;
     private boolean isAlive = true;
     private final int index;
