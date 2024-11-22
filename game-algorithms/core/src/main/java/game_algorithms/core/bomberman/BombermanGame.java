@@ -12,6 +12,7 @@ public class BombermanGame implements Game<BombermanGameState> {
 
     private final int BOMB_RANGE = 3;
     private final int SPAWN_CLEAR_RANGE = 3;
+    private final int MAX_NO_MOVE_TURNS = 10;
 
     public BombermanGame(BombermanGameConfig config) {
         if (config.players().stream().distinct().count() != config.players().size()) {
@@ -101,9 +102,10 @@ public class BombermanGame implements Game<BombermanGameState> {
             }
         }
 
+        state.explosions().clear();
+
         doPlayerTurns();
         updateDetonatingBombs();
-        handleExplodedCells();
 
         return true;
     }
@@ -126,23 +128,38 @@ public class BombermanGame implements Game<BombermanGameState> {
             var state = states[player.index()];
             try {
                 var action = player.implementation().getNextAction(state);
-                doPlayerAction(player, action);
+                var didTurn = doPlayerAction(player, action);
+
+                if (!didTurn) {
+                    player.setNoMoveCounter(player.noMoveCounter() + 1);
+                } else {
+                    player.setNoMoveCounter(0);
+                }
+
+                if (player.noMoveCounter() > MAX_NO_MOVE_TURNS) {
+                    killPlayer(player);
+                }
             } catch (Throwable throwable) {
                 // players are killed if they throw any exception
-                player.setAlive(false);
+                killPlayer(player);
 
                 System.out.println(throwable.getMessage());
             }
         }
     }
 
-    private void handleExplodedCells() {
-        var explodedCells = state.explosions().stream().flatMap(e -> e.cells().stream()).distinct().toList();
+    private void killPlayer(Player player) {
+        player.setAlive(false);
+        triggerBombs(player);
+    }
+
+    private void handleExplodedCells(Explosion explosion) {
+        var explodedCells = explosion.cells();
         for (var cell : explodedCells) {
-            cell.player().ifPresent(player -> player.setAlive(false));
+            cell.player().ifPresent(player -> killPlayer(player));
 
             cell.bomb().ifPresent(bomb -> {
-                if (bomb.detonationTimer().isEmpty()) {
+                if (bomb.detonationTimer().isEmpty() || bomb.detonationTimer().get() > 0) {
                     explode(bomb);
                 }
             });
@@ -154,8 +171,6 @@ public class BombermanGame implements Game<BombermanGameState> {
     }
 
     private void updateDetonatingBombs() {
-        state.explosions().clear();
-
         for (int i = 0; i < state.detonatingBombs().size(); i++) {
             var bomb = state.detonatingBombs().get(i);
             if (bomb.detonationTimer().get() > 0) {
@@ -179,7 +194,10 @@ public class BombermanGame implements Game<BombermanGameState> {
         state.explosions().add(explosion);
 
         bomb.owner().bombs().remove(bomb);
+        bomb.cell().setBomb(null);
         state.detonatingBombs().remove(bomb);
+
+        handleExplodedCells(explosion);
     }
 
     private void explode(Bomb bomb, int dx, int dy, Explosion explosion) {
@@ -215,52 +233,79 @@ public class BombermanGame implements Game<BombermanGameState> {
         }
     }
 
-    private void doPlayerAction(Player player, BombermanPlayerAction action) {
+    private boolean doPlayerAction(Player player, BombermanPlayerAction action) {
         switch (action) {
-            case NOTHING -> {
-            }
+            case NOTHING:
+                return false;
 
-            case MOVE_LEFT -> movePlayer(player, -1, 0);
-            case MOVE_RIGHT -> movePlayer(player, 1, 0);
-            case MOVE_UP -> movePlayer(player, 0, -1);
-            case MOVE_DOWN -> movePlayer(player, 0, 1);
+            case MOVE_LEFT:
+                return movePlayer(player, -1, 0);
+            case MOVE_RIGHT:
+                return movePlayer(player, 1, 0);
+            case MOVE_UP:
+                return movePlayer(player, 0, -1);
+            case MOVE_DOWN:
+                return movePlayer(player, 0, 1);
 
-            case PLACE_BOMB -> placeBomb(player);
-            case TRIGGER_DETONATION -> triggerBombs(player);
+            case PLACE_BOMB:
+                return placeBomb(player);
+            case TRIGGER_DETONATION:
+                return triggerBombs(player);
         }
+
+        throw new RuntimeException();
     }
 
-    private void triggerBombs(Player player) {
+    private boolean triggerBombs(Player player) {
+        var result = false;
+
         for (var bomb : player.bombs()) {
-            triggerBomb(bomb);
+            result |= triggerBomb(bomb);
         }
+
+        return result;
     }
 
-    private void triggerBomb(Bomb bomb) {
-        var detonationTimer = random.nextInt(1, 6);
-        bomb.setDetonationTimer(detonationTimer);
+    private boolean triggerBomb(Bomb bomb, int timer) {
+        if (bomb.detonationTimer().isPresent()) {
+            return false;
+        }
+
+        bomb.setDetonationTimer(timer);
 
         state.detonatingBombs().add(bomb);
+        return true;
     }
 
-    private void placeBomb(Player player) {
+    private boolean triggerBomb(Bomb bomb) {
+        var detonationTimer = random.nextInt(1, 6);
+        return triggerBomb(bomb, detonationTimer);
+    }
+
+    private boolean placeBomb(Player player) {
         // player cannot place any more bombs
         if (player.bombs().size() >= player.maxBombCount()) {
-            return;
+            return false;
+        }
+
+        if (player.currentCell().bomb().isPresent()) {
+            return false;
         }
 
         var bomb = new Bomb(player);
         player.currentCell().setBomb(bomb);
         player.bombs().add(bomb);
+
+        return true;
     }
 
-    private void movePlayer(Player player, int dx, int dy) {
+    private boolean movePlayer(Player player, int dx, int dy) {
         var targetX = player.currentCell().x() + dx;
         var targetY = player.currentCell().y() + dy;
 
         // player would move out of bounds, don't move the player
         if (targetX < 0 || targetX >= this.config.gridWidth() || targetY < 0 || targetY >= this.config.gridHeight()) {
-            return;
+            return false;
         }
 
         var targetCell = state.cells()[targetX][targetY];
@@ -269,13 +314,15 @@ public class BombermanGame implements Game<BombermanGameState> {
                 && targetCell.obstacleType().equals(ObstacleType.NONE);
 
         if (!canMoveOntoCell) {
-            return;
+            return false;
         }
 
         player.currentCell().setPlayer(null);
 
         targetCell.setPlayer(player);
         player.setCurrentCell(targetCell);
+
+        return true;
     }
 
     private BombermanGameState getState(int selfPlayerIndex) {
@@ -421,14 +468,23 @@ class Cell {
 class Player {
     private final BombermanPlayer implementation;
     private final List<Bomb> bombs = new ArrayList<>();
-    private int maxBombCount = 1;
+    private int maxBombCount = 5;
     private Cell currentCell;
     private boolean isAlive = true;
     private final int index;
+    private int noMoveCounter;
 
     public Player(BombermanPlayer implementation, int index) {
         this.implementation = implementation;
         this.index = index;
+    }
+
+    public int noMoveCounter() {
+        return noMoveCounter;
+    }
+
+    public void setNoMoveCounter(int value) {
+        noMoveCounter = value;
     }
 
     public int index() {
