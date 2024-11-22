@@ -107,13 +107,18 @@ public class BombermanGame implements Game<BombermanGameState> {
         var randomPlayerOrder = new ArrayList<>(state.players());
         randomPlayerOrder.sort((a, b) -> random.nextInt(-1, 2));
 
-        var state = getState();
+        var states = new BombermanGameState[state.players().size()];
+        for (int i = 0; i < states.length; i++) {
+            states[i] = getState(i);
+        }
 
-        for (var player : randomPlayerOrder) {
+        for (int i = 0; i < randomPlayerOrder.size(); i++) {
+            var player = randomPlayerOrder.get(i);
             if (!player.isAlive()) {
                 continue;
             }
 
+            var state = states[i];
             try {
                 var action = player.implementation().getNextAction(state);
                 doPlayerAction(player, action);
@@ -266,8 +271,7 @@ public class BombermanGame implements Game<BombermanGameState> {
         player.setCurrentCell(targetCell);
     }
 
-    @Override
-    public BombermanGameState getState() {
+    private BombermanGameState getState(int selfPlayerIndex) {
         var obstacles = new ArrayList<BombermanGameState.Obstacle>();
         var players = new ArrayList<BombermanGameState.Player>();
         var explosions = new ArrayList<BombermanGameState.Explosion>();
@@ -296,7 +300,7 @@ public class BombermanGame implements Game<BombermanGameState> {
                 return new BombermanGameState.Bomb(bombPosition, bomb.detonationTimer().isPresent());
             }).toList();
 
-            var playerState = new BombermanGameState.Player(i, name, player.isAlive(), playerPosition, bombs, player.maxBombCount());
+            var playerState = new BombermanGameState.Player(i == selfPlayerIndex, i, name, player.isAlive(), playerPosition, bombs, player.maxBombCount());
             players.add(playerState);
         }
 
@@ -306,6 +310,11 @@ public class BombermanGame implements Game<BombermanGameState> {
         }
 
         return new BombermanGameState(config.gridWidth(), config.gridHeight(), obstacles, players, explosions);
+    }
+
+    @Override
+    public BombermanGameState getState() {
+        return getState(-1);
     }
 
 }
