@@ -23,7 +23,12 @@ public class BombermanGame implements Game<BombermanGameState> {
 
         this.config = config;
 
-        var players = this.config.players().stream().map(Player::new).toList();
+        var players = new ArrayList<Player>();
+        for (int i = 0; i < config.players().size(); i++) {
+            var player = new Player(config.players().get(i), i);
+            players.add(player);
+        }
+
         this.state = new BombermanGameInternalState(config.gridWidth(), config.gridHeight(), players);
         this.initBoard();
     }
@@ -118,13 +123,15 @@ public class BombermanGame implements Game<BombermanGameState> {
                 continue;
             }
 
-            var state = states[i];
+            var state = states[player.index()];
             try {
                 var action = player.implementation().getNextAction(state);
                 doPlayerAction(player, action);
             } catch (Throwable throwable) {
                 // players are killed if they throw any exception
                 player.setAlive(false);
+
+                System.out.println(throwable.getMessage());
             }
         }
     }
@@ -300,7 +307,7 @@ public class BombermanGame implements Game<BombermanGameState> {
                 return new BombermanGameState.Bomb(bombPosition, bomb.detonationTimer().isPresent());
             }).toList();
 
-            var playerState = new BombermanGameState.Player(i == selfPlayerIndex, i, name, player.isAlive(), playerPosition, bombs, player.maxBombCount());
+            var playerState = new BombermanGameState.Player(player.index() == selfPlayerIndex, player.index(), name, player.isAlive(), playerPosition, bombs, player.maxBombCount());
             players.add(playerState);
         }
 
@@ -417,9 +424,15 @@ class Player {
     private int maxBombCount = 1;
     private Cell currentCell;
     private boolean isAlive = true;
+    private final int index;
 
-    public Player(BombermanPlayer implementation) {
+    public Player(BombermanPlayer implementation, int index) {
         this.implementation = implementation;
+        this.index = index;
+    }
+
+    public int index() {
+        return index;
     }
 
     public boolean isAlive() {
