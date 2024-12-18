@@ -60,6 +60,40 @@ const cells = computed(() => {
     };
   });
 });
+
+
+async function copyStateStringForTests() {
+  if (state.value == null) {
+    return;
+  }
+
+  const gameState = state.value;
+
+  const chars: string[][] = Array.from({ length: gameState.height }).map((_) =>
+    Array.from({ length: gameState.width }).map((_) => ".")
+  );
+
+  for (const player of gameState.players) {
+    if (player.isAlive) {
+      chars[player.cell.y][player.cell.x] = player.index.toString()[0];
+    }
+
+    const bombChar = "abcd"[player.index];
+    for (const bomb of player.bombs) {
+      chars[bomb.cell.y][bomb.cell.x] = bomb.isTriggered
+        ? bombChar.toUpperCase()
+        : bombChar;
+    }
+  }
+
+  for (const obstacle of gameState.obstacles) {
+    chars[obstacle.cell.y][obstacle.cell.x] = obstacle.isBreakable ? "x" : "#";
+  }
+
+  const lines = chars.map((lineChars) => lineChars.join("")).join("\n");
+
+  await navigator.clipboard.writeText(lines);
+}
 </script>
 
 <template>
@@ -131,8 +165,15 @@ const cells = computed(() => {
       </div>
     </div>
 
-    <button type="button" v-if="state == null || isGameOver" @click="() => startGame()">
+    <button
+      type="button"
+      v-if="state == null || isGameOver"
+      @click="() => startGame()"
+    >
       Start new game
+    </button>
+    <button type="button" v-else @click="() => copyStateStringForTests()">
+      Copy state as string for tests
     </button>
   </main>
 </template>
