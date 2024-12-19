@@ -3,6 +3,8 @@ package game_algorithms.core.bomberman;
 import game_algorithms.core.Game;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BombermanGame implements Game<BombermanGameState> {
     private final BombermanGameConfig config;
@@ -143,7 +145,7 @@ public class BombermanGame implements Game<BombermanGameState> {
                 // players are killed if they throw any exception
                 killPlayer(player);
 
-                System.out.println(throwable.getMessage());
+                Logger.getAnonymousLogger().log(Level.SEVERE, throwable.getMessage(), throwable);
             }
         }
     }
