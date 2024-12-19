@@ -61,7 +61,6 @@ const cells = computed(() => {
   });
 });
 
-
 async function copyStateStringForTests() {
   if (state.value == null) {
     return;
@@ -70,17 +69,17 @@ async function copyStateStringForTests() {
   const gameState = state.value;
 
   const chars: string[][] = Array.from({ length: gameState.height }).map((_) =>
-    Array.from({ length: gameState.width }).map((_) => ".")
+    Array.from({ length: gameState.width }).map((_) => "")
   );
 
   for (const player of gameState.players) {
     if (player.isAlive) {
-      chars[player.cell.y][player.cell.x] = player.index.toString()[0];
+      chars[player.cell.y][player.cell.x] += player.index.toString()[0];
     }
 
     const bombChar = "abcd"[player.index];
     for (const bomb of player.bombs) {
-      chars[bomb.cell.y][bomb.cell.x] = bomb.isTriggered
+      chars[bomb.cell.y][bomb.cell.x] += bomb.isTriggered
         ? bombChar.toUpperCase()
         : bombChar;
     }
@@ -90,7 +89,9 @@ async function copyStateStringForTests() {
     chars[obstacle.cell.y][obstacle.cell.x] = obstacle.isBreakable ? "x" : "#";
   }
 
-  const lines = chars.map((lineChars) => lineChars.join("")).join("\n");
+  const lines = chars
+    .map((lineChars) => lineChars.map((c) => (c == "" ? "." : c)).join(","))
+    .join("\n");
 
   await navigator.clipboard.writeText(lines);
 }
